@@ -132,20 +132,34 @@ client.on('interactionCreate', async (interaction) => {
 
             const createEmbed = (page) => {
                 const team = bossData[page];
+
+                // Formatear héroes, armas y cartas
+                const heroesInfo = team.heroes.map((hero, index) => {
+                    const weapon = team.weapons[index];
+                    const cards = team.cards[index];
+                    return `**${hero}**\n- Arma: ${weapon}\n- Cartas: ${cards}`;
+                }).join('\n\n');
+
+                // Formatear tiempos de cadena
+                const chainsInfo = Object.entries(team.chains.P1).map(([chainNumber, chainDescription]) => {
+                    return `**Cadena ${chainNumber}:** ${chainDescription}`;
+                }).join('\n');
+
                 return new EmbedBuilder()
                     .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
                     .addFields(
-                        { name: '👥 Héroes', value: team.heroes.join(', '), inline: false },
-                        { name: '⚔️ Armas', value: team.weapons.join(', '), inline: false },
+                        { name: '👥 Héroes, Armas y Cartas', value: heroesInfo, inline: false },
+                        { name: '⏳ Tiempos de Cadena', value: chainsInfo, inline: false },
                         { name: '📿 Accesorios', value: team.access.join(', '), inline: false },
-                        { name: '🃏 Cartas', value: team.cards.join(', '), inline: false },
                         { name: '📜 Reliquia', value: team.relic, inline: false },
                         { name: '💥 Daño', value: team.dmg, inline: false },
                         { name: '🎥 Video Parte 1', value: team.videoP1 || 'No disponible', inline: false },
                         { name: '🎥 Video Parte 2', value: team.videoP2 || 'No disponible', inline: false },
                     )
                     .setColor('#0099ff')
-                    .setFooter({ text: `Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}` });
+                    .setFooter({
+                        text: `Temporada: ${team.season} | Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}\nDatos proporcionados por Guardian Tales TOP`,
+                    });
             };
 
             const createButtons = (page) => {
