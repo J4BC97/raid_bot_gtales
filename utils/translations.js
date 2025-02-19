@@ -1,0 +1,41 @@
+module.exports = {
+    access: {
+        mino: "Minotaur Necklace",
+        sg: "Sniper Goggles",
+        shar: "Sharpshooter",
+        mad: "Mad Panda Brooch",
+        earth: "Earth Necklace",
+        light: "Light Earrings",
+        dark: "Dark Earrings",
+        basic: "Basic Earrings",
+        fire: "Fire Earrings",
+        water: "Water Earrings",
+    },
+    cards: {
+        "skill-skill": "Skill Damage + Skill Damage",
+        "crit-crit": "Critical Rate + Critical Rate",
+        "atk-atk": "Attack + Attack",
+        "def-def": "Defense + Defense",
+        "hp-hp": "HP + HP",
+        "skill-crit": "Skill Damage + Critical Rate",
+        "atk-crit": "Attack + Critical Rate",
+    },
+    relic: {
+        book: "Libro",
+        cup: "Copa",
+        shield: "Shield of Faith",
+        sword: "Sword of Justice",
+    },
+    chains: {
+        "P1": "Parte 1",
+        "P2": "Parte 2",
+        "WS": "Weapon Skill",
+    },
+    infos: {
+        "def": "Defensa",
+        "crit": "Tasa de Crítico",
+        "skill": "Daño de Habilidad",
+        "atk": "Ataque",
+        "hp": "Vida",
+    },
+};
