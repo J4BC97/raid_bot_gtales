@@ -11,6 +11,7 @@
   "description": "Bot para obtener informacion de la API Gtales.top",
   "dependencies": {
     "axios": "^1.7.9",
-    "discord.js": "^14.18.0"
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7"
   }
 }

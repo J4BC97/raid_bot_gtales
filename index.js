@@ -1,4 +1,5 @@
-const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+require('dotenv').config();
+const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder, REST, Routes } = require('discord.js');
 const axios = require('axios');
 const https = require('https');
 
@@ -11,6 +12,61 @@ const client = new Client({
 });
 
 const token = process.env.DISCORD_BOT_TOKEN;
+const clientId = process.env.CLIENT_ID;
+const guildId = process.env.GUILD_ID;
+
+// Log the value of the token
+console.log('Token from environment:', token);
+console.log('Client ID from environment:', clientId);
+console.log('Guild ID from environment:', guildId);
+
+// Diccionario de traducciones
+const translations = {
+    access: {
+        mino: "Minotaur Necklace",
+        sg: "Sniper Goggles",
+        shar: "Sharpshooter",
+        mad: "Mad Panda Brooch",
+        earth: "Earth Necklace",
+        light: "Light Earrings",
+        dark: "Dark Earrings",
+        basic: "Basic Earrings",
+        fire: "Fire Earrings",
+        water: "Water Earrings",
+        // Agrega más traducciones de accesorios aquí
+    },
+    cards: {
+        "skill-skill": "Skill Damage + Skill Damage",
+        "crit-crit": "Critical Rate + Critical Rate",
+        "atk-atk": "Attack + Attack",
+        "def-def": "Defense + Defense",
+        "hp-hp": "HP + HP",
+        "skill-crit": "Skill Damage + Critical Rate",
+        "atk-crit": "Attack + Critical Rate",
+        // Agrega más traducciones de cartas aquí
+    },
+    relic: {
+        book: "Libro",
+        cup: "Copa",
+        shield: "Shield of Faith",
+        sword: "Sword of Justice",
+        // Agrega más traducciones de reliquias aquí
+    },
+    chains: {
+        "P1": "Parte 1",
+        "P2": "Parte 2",
+        "WS": "Weapon Skill",
+        // Agrega más traducciones de cadenas aquí
+    },
+    infos: {
+        "def": "Defensa",
+        "crit": "Tasa de Crítico",
+        "skill": "Daño de Habilidad",
+        "atk": "Ataque",
+        "hp": "Vida",
+        // Agrega más traducciones de términos comunes aquí
+    },
+};
 
 // Datos de jefes y elementos
 const bosses = [
@@ -39,75 +95,80 @@ const bosses = [
     { name: 'jerry', elements: ['dark'] },
 ];
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
-});
 
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
+    // Register slash command
+    const commands = [
+        new SlashCommandBuilder()
+            .setName('raid')
+            .setDescription('Obtén los equipos recomendados para un jefe y elemento específico.')
+            .addStringOption(option =>
+                option.setName('jefe')
+                    .setDescription('El nombre del jefe')
+                    .setRequired(true)
+                    .setAutocomplete(true)) // Habilitar autocompletado para jefe
+            .addStringOption(option =>
+                option.setName('elemento')
+                    .setDescription('El elemento del jefe')
+                    .setRequired(true)
+                    .setAutocomplete(true)) // Habilitar autocompletado para elemento
+    ].map(command => command.toJSON());
 
-    if (message.content.startsWith('!raid')) {
-        // Mostrar menú de selección de jefes (respuesta efímera)
-        const bossMenu = new StringSelectMenuBuilder()
-            .setCustomId('select-boss')
-            .setPlaceholder('Selecciona un jefe')
-            .addOptions(
-                bosses.map(boss => ({
-                    label: boss.name.toUpperCase(),
-                    value: boss.name,
-                }))
-            );
+    const rest = new REST({ version: '10' }).setToken(token);
 
-        const row = new ActionRowBuilder().addComponents(bossMenu);
+    try {
+        console.log('Started refreshing application (/) commands.');
 
-        await message.reply({
-            content: 'Selecciona un jefe de la lista:',
-            components: [row],
-            flags: 64, // Mensaje efímero (solo visible para el usuario)
-        });
+        await rest.put(
+            Routes.applicationGuildCommands(clientId, guildId),
+            { body: commands },
+        );
+
+        console.log('Successfully reloaded application (/) commands.');
+    } catch (error) {
+        console.error(error);
     }
 });
 
 client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isStringSelectMenu() && !interaction.isButton()) return;
+    if (interaction.isAutocomplete()) {
+        // Manejar autocompletado para jefe y elemento
+        const focusedOption = interaction.options.getFocused(true);
+        const choices = [];
 
-    // Manejar selección de jefe
-    if (interaction.customId === 'select-boss') {
-        const selectedBoss = interaction.values[0];
-        const bossData = bosses.find(boss => boss.name === selectedBoss);
+        if (focusedOption.name === 'jefe') {
+            // Mostrar lista de jefes
+            choices.push(...bosses.map(boss => ({ name: boss.name.toUpperCase(), value: boss.name })));
+        } else if (focusedOption.name === 'elemento') {
+            // Mostrar elementos válidos para el jefe seleccionado
+            const selectedBoss = interaction.options.getString('jefe');
+            const bossData = bosses.find(boss => boss.name === selectedBoss);
+            if (bossData) {
+                choices.push(...bossData.elements.map(element => ({ name: element.toUpperCase(), value: element })));
+            }
+        }
 
-        // Mostrar menú de selección de elementos (respuesta efímera)
-        const elementMenu = new StringSelectMenuBuilder()
-            .setCustomId('select-element')
-            .setPlaceholder('Selecciona un elemento')
-            .addOptions(
-                bossData.elements.map(element => ({
-                    label: element.toUpperCase(),
-                    value: element,
-                }))
-            );
+        // Filtrar opciones basadas en la entrada del usuario
+        const filtered = choices.filter(choice =>
+            choice.name.toLowerCase().startsWith(focusedOption.value.toLowerCase())
+        );
 
-        const row = new ActionRowBuilder().addComponents(elementMenu);
-
-        // Eliminar el mensaje anterior de selección de jefe
-        await interaction.deferUpdate(); // Asegura que la interacción esté completada
-        await interaction.deleteReply(); // Elimina el mensaje anterior
-
-        // Enviar el nuevo mensaje de selección de elementos
-        await interaction.followUp({
-            content: `Selecciona un elemento para el jefe **${selectedBoss.toUpperCase()}**:`,
-            components: [row],
-            flags: 64, // Mensaje efímero (solo visible para el usuario)
-        });
+        await interaction.respond(filtered.slice(0, 25)); // Discord solo permite 25 opciones
     }
 
-    // Manejar selección de elemento
-    if (interaction.customId === 'select-element') {
-        const selectedElement = interaction.values[0];
-        const selectedBoss = interaction.message.content.match(/\*\*(.*?)\*\*/)[1].toLowerCase();
+    if (interaction.isChatInputCommand() && interaction.commandName === 'raid') {
+        const selectedBoss = interaction.options.getString('jefe').toLowerCase();
+        const selectedElement = interaction.options.getString('elemento').toLowerCase();
 
-        // Indicar que el bot está procesando la interacción
-        await interaction.deferReply({ ephemeral: true });
+        // Validar jefe y elemento
+        const bossData = bosses.find(boss => boss.name === selectedBoss);
+        if (!bossData || !bossData.elements.includes(selectedElement)) {
+            return interaction.reply({
+                content: 'El jefe o elemento seleccionado no es válido. Por favor, usa el autocompletado para seleccionar opciones válidas.',
+                ephemeral: true,
+            });
+        }
 
         try {
             const response = await axios.get(`https://www.gtales.top/api/raids?boss=${selectedBoss}&element=${selectedElement}`, {
@@ -118,41 +179,60 @@ client.on('interactionCreate', async (interaction) => {
             const bossData = response.data;
 
             if (!Array.isArray(bossData) || bossData.length === 0) {
-                return interaction.editReply({
+                return interaction.reply({
                     content: 'No se encontraron equipos recomendados para este jefe y elemento.',
+                    ephemeral: true,
                 });
             }
 
-            // Eliminar el mensaje de selección de elementos
-            await interaction.deleteReply();
-
-            // Enviar la información de cada equipo en un embed con paginación
             let currentPage = 0;
-            const teamsPerPage = 1; // Número de equipos por página
 
             const createEmbed = (page) => {
                 const team = bossData[page];
 
-                // Formatear héroes, armas y cartas
+                // Formatear héroes, armas, cartas y accesorios
                 const heroesInfo = team.heroes.map((hero, index) => {
                     const weapon = team.weapons[index];
                     const cards = team.cards[index];
-                    return `**${hero}**\n- Arma: ${weapon}\n- Cartas: ${cards}`;
+                    const accessories = team.access[index]; // Accesorios para este héroe
+
+                    // Traducir accesorios y cartas
+                    const translatedAccessories = translations.access[accessories] || accessories;
+                    const translatedCards = translations.cards[cards] || cards;
+
+                    return `**${hero}**\n` +
+                           `- **Arma:** ${weapon}\n` +
+                           `- **Cartas:** ${translatedCards}\n` +
+                           `- **Accesorios:** ${translatedAccessories}`;
                 }).join('\n\n');
 
                 // Formatear tiempos de cadena
-                const chainsInfo = Object.entries(team.chains.P1).map(([chainNumber, chainDescription]) => {
-                    return `**Cadena ${chainNumber}:** ${chainDescription}`;
-                }).join('\n');
+                let chainsInfo = 'No disponible';
+                if (team.chains && team.chains.P1) {
+                    chainsInfo = Object.entries(team.chains.P1)
+                        .map(([chainNumber, chainDescription]) => {
+                            // Traducir términos comunes en las cadenas
+                            let translatedDescription = chainDescription;
+                            for (const [key, value] of Object.entries(translations.infos)) {
+                                translatedDescription = translatedDescription.replace(new RegExp(key, 'g'), value);
+                            }
+                            return `**Cadena ${chainNumber}:** ${translatedDescription}`;
+                        })
+                        .join('\n');
+                }
+
+                // Traducir reliquia
+                const translatedRelic = translations.relic[team.relic] || team.relic;
+
+                let damageInfo = team.dmg ? String(team.dmg) : 'No disponible';
 
                 return new EmbedBuilder()
                     .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
                     .addFields(
-                        { name: '👥 Héroes, Armas y Cartas', value: heroesInfo, inline: false },
+                        { name: '👥 Héroes, Armas, Cartas y Accesorios', value: heroesInfo, inline: false },
                         { name: '⏳ Tiempos de Cadena', value: chainsInfo, inline: false },
-                        { name: '📿 Accesorios', value: team.access.join(', '), inline: false },
-                        { name: '📜 Reliquia', value: team.relic, inline: false },
-                        { name: '💥 Daño', value: team.dmg, inline: false },
+                        { name: '📜 Reliquia', value: translatedRelic, inline: false },
+                        { name: '💥 Daño', value: damageInfo, inline: false },
                         { name: '🎥 Video Parte 1', value: team.videoP1 || 'No disponible', inline: false },
                         { name: '🎥 Video Parte 2', value: team.videoP2 || 'No disponible', inline: false },
                     )
@@ -163,57 +243,74 @@ client.on('interactionCreate', async (interaction) => {
             };
 
             const createButtons = (page) => {
-                return new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('previous')
-                        .setLabel('Anterior')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page === 0),
-                    new ButtonBuilder()
-                        .setCustomId('next')
-                        .setLabel('Siguiente')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page === bossData.length - 1),
-                );
+                const buttons = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`previous-${page}`)
+                            .setLabel('Anterior')
+                            .setStyle(ButtonStyle.Primary)
+                            .setDisabled(page === 0),
+                        new ButtonBuilder()
+                            .setCustomId(`next-${page}`)
+                            .setLabel('Siguiente')
+                            .setStyle(ButtonStyle.Primary)
+                            .setDisabled(page === bossData.length - 1),
+                    );
+                return buttons;
             };
 
-            const sendPage = async (page) => {
-                await interaction.followUp({
-                    embeds: [createEmbed(page)],
-                    components: [createButtons(page)],
-                    flags: 64, // Mensaje efímero (solo visible para el usuario)
-                });
-            };
-
-            await sendPage(currentPage);
+            // Enviar la primera página
+            await interaction.reply({
+                embeds: [createEmbed(currentPage)],
+                components: [createButtons(currentPage)],
+                ephemeral: true,
+            });
 
             // Manejar paginación
             const filter = (i) => i.user.id === interaction.user.id;
             const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
 
             collector.on('collect', async (i) => {
-                if (i.customId === 'previous') {
-                    currentPage--;
-                } else if (i.customId === 'next') {
-                    currentPage++;
+                const customId = i.customId;
+                const page = parseInt(customId.split('-')[1]);
+
+                if (customId.startsWith('previous')) {
+                    currentPage = Math.max(0, page - 1);
+                } else if (customId.startsWith('next')) {
+                    currentPage = Math.min(bossData.length - 1, page + 1);
                 }
 
-                await i.update({
-                    embeds: [createEmbed(currentPage)],
-                    components: [createButtons(currentPage)],
-                });
+                try {
+                    // Actualizar el mensaje con la nueva página
+                    await i.update({
+                        embeds: [createEmbed(currentPage)],
+                        components: [createButtons(currentPage)],
+                    });
+                } catch (updateError) {
+                    console.error('Error updating interaction:', updateError);
+                }
             });
 
-            collector.on('end', () => {
-                interaction.editReply({ components: [] }); // Eliminar botones al finalizar
+            collector.on('end', async () => {
+                try {
+                    await interaction.editReply({ components: [] }); // Eliminar botones al finalizar
+                } catch (editError) {
+                    console.error('Error editing reply:', editError);
+                }
             });
-        } catch (error) {
-            console.error(error);
-            interaction.editReply({
+        } catch (apiError) {
+            console.error('Error fetching data or processing interaction:', apiError);
+            interaction.reply({
                 content: 'Hubo un error al obtener la información del jefe de raid.',
+                ephemeral: true,
             });
         }
     }
 });
 
-client.login(token);
+// Log the token before attempting to log in
+console.log('Attempting to log in with token:', token);
+
+client.login(token).catch(error => {
+    console.error('Failed to login to Discord:', error);
+});
