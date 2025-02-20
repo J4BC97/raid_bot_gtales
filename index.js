@@ -17,6 +17,14 @@ loadEvents(client);
 
 // Crear un servidor HTTP básico
 const server = http.createServer((req, res) => {
+    // Ruta para UptimeRobot
+    if (req.url === '/ping') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('pong\n'); // Responde con "pong" cuando se accede a /ping
+        return;
+    }
+
+    // Ruta principal
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Bot de Discord está en funcionamiento.\n');
 });
