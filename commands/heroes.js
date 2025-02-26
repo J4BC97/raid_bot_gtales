@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
-const translations = require('../utils/translations'); // Importar las traducciones
+const translations = require('../utils/heroTranslations'); // Importar las traducciones
 
 // Función para obtener la lista de héroes desde la API
 async function fetchHeroes() {
