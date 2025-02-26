@@ -15,10 +15,10 @@ module.exports = {
                 return interaction.reply({ content: 'Could not retrieve hero list.', ephemeral: true });
             }
 
-            // 2. Structure the data correctly for addOptions
+            // 2. Structure the data correctly for addOptions, and ensure values are strings
             const selectOptions = heroes.map(hero => ({
                 label: hero.name.substring(0, 100), // Use hero.name and limit to 100
-                value: hero.key, // Use hero.key as value
+                value: `hero_${hero.key}`, // Use hero.key as value and prepend "hero_" to force string
             }));
 
             // 3. Build the select menu
@@ -52,7 +52,7 @@ module.exports = {
                 try {
                     await i.deferUpdate(); // Tell Discord we're handling the interaction
 
-                    const selectedHeroKey = i.values[0];
+                    const selectedHeroKey = i.values[0].replace('hero_', ''); // Extract the actual key
 
                     // 6. Fetch the hero details from the API
                     const heroDetailsResponse = await axios.get(`https://www.gtales.top/api/heroes?hero=${selectedHeroKey}`);
