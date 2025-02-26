@@ -35,8 +35,17 @@ function createHeroEmbed(heroDetails) {
             { name: 'HP', value: heroDetails.stats.hp || 'N/A', inline: true },
             { name: 'Defense', value: heroDetails.stats.def || 'N/A', inline: true },
         )
-        .setFooter({ text: `Key: ${heroDetails.key}` })
-        .setThumbnail(`https://www.gtales.top${heroDetails.atr}` || 'https://via.placeholder.com/150');
+        .setFooter({ text: `Key: ${heroDetails.key}` });
+
+    // Construir la URL del thumbnail del héroe
+    if (heroDetails.atr) {
+        const heroThumbnailUrl = `https://gtales.top/assets/heroes/${heroDetails.atr}.webp`;
+        if (isValidUrl(heroThumbnailUrl)) {
+            embed.setThumbnail(heroThumbnailUrl);
+        } else {
+            console.warn(`Invalid hero thumbnail URL for ${heroDetails.name}: ${heroThumbnailUrl}`);
+        }
+    }
 
     // Añadir detalles de las habilidades, armas y variantes
     if (heroDetails.variants && heroDetails.variants.length > 0) {
@@ -69,10 +78,30 @@ function createHeroEmbed(heroDetails) {
             embed.addFields(
                 { name: 'Weapon', value: `**${variant.weapon.name}**\n**Type:** ${variant.weapon.type}\n**Effect:** ${variant.weapon.effect}\n**Damage:** ${variant.weapon.dmg}\n**Attack:** ${variant.weapon.atk}\n**Stats:** ${variant.weapon.stats}\n**Options:** ${variant.weapon.options}`, inline: false },
             );
+
+            // Construir la URL del arma
+            if (heroDetails.atr) {
+                const weaponThumbnailUrl = `https://gtales.top/assets/weapons/${heroDetails.atr}.webp`;
+                if (isValidUrl(weaponThumbnailUrl)) {
+                    embed.setImage(weaponThumbnailUrl); // Usar setImage para mostrar el arma
+                } else {
+                    console.warn(`Invalid weapon thumbnail URL for ${heroDetails.name}: ${weaponThumbnailUrl}`);
+                }
+            }
         }
     }
 
     return embed;
+}
+
+// Función para validar si una URL es válida
+function isValidUrl(url) {
+    try {
+        new URL(url); // Intenta crear un objeto URL
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 module.exports = {
