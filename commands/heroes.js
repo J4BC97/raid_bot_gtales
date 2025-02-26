@@ -15,20 +15,17 @@ module.exports = {
                 return interaction.reply({ content: 'Could not retrieve hero list.', ephemeral: true });
             }
 
-            // 2. Truncate labels and values to fit Discord's limits and structure for addOptions
-            const selectOptions = heroes.map(hero => {
-                const truncatedHeroName = hero.name.substring(0, 100); // Limit to 100 characters
-                return {
-                    label: truncatedHeroName,
-                    value: hero.key, // Use hero.key as value
-                };
-            });
+            // 2. Structure the data correctly for addOptions
+            const selectOptions = heroes.map(hero => ({
+                label: hero.name.substring(0, 100), // Use hero.name and limit to 100
+                value: hero.key, // Use hero.key as value
+            }));
 
             // 3. Build the select menu
             const selectMenu = new StringSelectMenuBuilder()
                 .setCustomId('hero_select')
                 .setPlaceholder('Select a hero...')
-                .addOptions(selectOptions); // Use the selectOptions array
+                .addOptions(selectOptions); // Pass the correctly structured array
 
             const actionRow = new ActionRowBuilder()
                 .addComponents(selectMenu);
@@ -52,15 +49,17 @@ module.exports = {
             });
 
             collector.on('collect', async i => {
-                const selectedHeroKey = i.values[0];
-
                 try {
+                    await i.deferUpdate(); // Tell Discord we're handling the interaction
+
+                    const selectedHeroKey = i.values[0];
+
                     // 6. Fetch the hero details from the API
                     const heroDetailsResponse = await axios.get(`https://www.gtales.top/api/heroes?hero=${selectedHeroKey}`);
                     const heroDetails = heroDetailsResponse.data;
 
                     if (!heroDetails) {
-                        return i.update({ content: 'Could not retrieve hero details.', components: [], ephemeral: true });
+                        return i.editReply({ content: 'Could not retrieve hero details.', components: [], ephemeral: true });
                     }
 
                     // 7. Build the embed with hero details
@@ -78,10 +77,10 @@ module.exports = {
                         .setThumbnail(`https://www.gtales.top${heroDetails.atr}` || 'https://via.placeholder.com/150');
 
                     // 8. Reply with the hero details embed (ephemeral)
-                    await i.update({ embeds: [heroEmbed], components: [], ephemeral: true });
+                    await i.editReply({ embeds: [heroEmbed], components: [], ephemeral: true });
                 } catch (error) {
                     console.error('Error fetching hero details:', error);
-                    return i.update({ content: 'An error occurred while fetching hero details.', components: [], ephemeral: true }); //Use i.update
+                    return i.editReply({ content: 'An error occurred while fetching hero details.', components: [], ephemeral: true }); //Use i.editReply
                 }
             });
 
