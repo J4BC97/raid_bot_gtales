@@ -1,29 +1,32 @@
 const axios = require('axios');
 const https = require('https');
+const NodeCache = require('node-cache');
 
-function ApiError(message, originalError) {
-  this.name = 'ApiError';
-  this.message = message;
-  this.originalError = originalError;
-  this.stack = (new Error()).stack; // Optional: include stack trace
-}
-
-ApiError.prototype = Object.create(Error.prototype);
-ApiError.prototype.constructor = ApiError;
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL: 1 hour, check every 10 minutes
 
 module.exports = {
   async getBossData(boss, element) {
+    const cacheKey = `${boss}-${element}`;
+
     try {
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Returning cached data for ${boss} ${element}`);
+        return cachedData;
+      }
+
       const response = await axios.get(`https://www.gtales.top/api/raids?boss=${boss}&element=${element}`, {
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
         }),
       });
+      cache.set(cacheKey, response.data);
       return response.data;
     } catch (error) {
+      // Error handling (as discussed previously)
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
       console.error(errorMessage);
-      throw new ApiError(errorMessage, error);
+      throw new Error(errorMessage);
     }
   },
 };
