@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
+const translations = require('../utils/translations'); // Importar las traducciones
 
 // Función para obtener la lista de héroes desde la API
 async function fetchHeroes() {
@@ -24,18 +25,37 @@ async function fetchHeroDetails(heroKey) {
 }
 
 // Función para crear el embed con los detalles del héroe
-function createHeroEmbed(heroDetails) {
+function createHeroEmbed(heroDetails, lang = 'en') {
+    const t = translations[lang]; // Obtener las traducciones para el idioma seleccionado
+
+    // Definir colores según el elemento del héroe
+    const elementColors = {
+        fire: '#FF5733',    // Rojo
+        water: '#3399FF',   // Azul
+        earth: '#8B4513',   // Marrón
+        light: '#FFD700',   // Dorado
+        dark: '#4B0082',    // Morado oscuro
+        basic: '#A9A9A9',   // Gris
+    };
+
+    // Obtener el color basado en el elemento del héroe
+    const embedColor = elementColors[heroDetails.element.toLowerCase()] || '#0099FF'; // Color por defecto
+
+    // Crear el embed
     const embed = new EmbedBuilder()
-        .setTitle(heroDetails.name || 'Unknown Hero')
-        .setDescription(`**Role:** ${heroDetails.role || 'N/A'}\n**Element:** ${heroDetails.element || 'N/A'}`)
-        .addFields(
-            { name: 'Rarity', value: heroDetails.rarity || 'N/A', inline: true },
-            { name: 'Collection', value: heroDetails.collection || 'N/A', inline: true },
-            { name: 'Attack', value: heroDetails.stats.atk || 'N/A', inline: true },
-            { name: 'HP', value: heroDetails.stats.hp || 'N/A', inline: true },
-            { name: 'Defense', value: heroDetails.stats.def || 'N/A', inline: true },
-        )
+        .setTitle(`**${heroDetails.name || 'Unknown Hero'}**`)
+        .setDescription(`**${t.role}:** ${heroDetails.role || 'N/A'} | **${t.element}:** ${heroDetails.element || 'N/A'}`)
+        .setColor(embedColor) // Color dinámico basado en el elemento
         .setFooter({ text: `Key: ${heroDetails.key}` });
+
+    // Añadir campos de información básica
+    embed.addFields(
+        { name: `⭐ ${t.rarity}`, value: heroDetails.rarity || 'N/A', inline: true },
+        { name: `📚 ${t.collection}`, value: heroDetails.collection || 'N/A', inline: true },
+        { name: `⚔️ ${t.attack}`, value: heroDetails.stats.atk || 'N/A', inline: true },
+        { name: `❤️ ${t.hp}`, value: heroDetails.stats.hp || 'N/A', inline: true },
+        { name: `🛡️ ${t.defense}`, value: heroDetails.stats.def || 'N/A', inline: true },
+    );
 
     // Construir la URL del thumbnail del héroe
     if (heroDetails.atr) {
@@ -54,29 +74,29 @@ function createHeroEmbed(heroDetails) {
         // Añadir habilidades
         if (variant.na) {
             embed.addFields(
-                { name: 'Normal Attack', value: variant.na.description || 'N/A', inline: false },
+                { name: `🎯 ${t.normalAttack}`, value: variant.na.description || 'N/A', inline: false },
             );
         }
         if (variant.ability) {
             embed.addFields(
-                { name: 'Ability', value: variant.ability.description || 'N/A', inline: false },
+                { name: `✨ ${t.ability}`, value: variant.ability.description || 'N/A', inline: false },
             );
         }
         if (variant.chain) {
             embed.addFields(
-                { name: 'Chain Skill', value: variant.chain.description || 'N/A', inline: false },
+                { name: `🌀 ${t.chainSkill}`, value: variant.chain.description || 'N/A', inline: false },
             );
         }
         if (variant.skill) {
             embed.addFields(
-                { name: 'Skill', value: `${variant.skill.title}: ${variant.skill.description}\n**Damage:** ${variant.skill.dmg}%\n**Cooldown:** ${variant.skill.cd}s`, inline: false },
+                { name: `🔥 ${t.skill}`, value: `**${variant.skill.title}**\n${variant.skill.description}\n**${t.damage}:** ${variant.skill.dmg}%\n**${t.cooldown}:** ${variant.skill.cd}s`, inline: false },
             );
         }
 
         // Añadir detalles del arma
         if (variant.weapon) {
             embed.addFields(
-                { name: 'Weapon', value: `**${variant.weapon.name}**\n**Type:** ${variant.weapon.type}\n**Effect:** ${variant.weapon.effect}\n**Damage:** ${variant.weapon.dmg}\n**Attack:** ${variant.weapon.atk}\n**Stats:** ${variant.weapon.stats}\n**Options:** ${variant.weapon.options}`, inline: false },
+                { name: `⚔️ ${t.weapon}`, value: `**${variant.weapon.name}**\n**${t.type}:** ${variant.weapon.type}\n**${t.effect}:** ${variant.weapon.effect}\n**${t.damage}:** ${variant.weapon.dmg}\n**${t.attack}:** ${variant.weapon.atk}\n**${t.stats}:** ${variant.weapon.stats}\n**${t.options}:** ${variant.weapon.options}`, inline: false },
             );
 
             // Construir la URL del arma
@@ -115,23 +135,24 @@ module.exports = {
                 .setAutocomplete(true)), // Habilitar autocompletado
     async execute(interaction) {
         const selectedHeroKey = interaction.options.getString('hero');
+        const lang = 'es'; // Puedes cambiar esto según el idioma del usuario
 
         try {
             // Obtener los detalles del héroe seleccionado
             const heroDetails = await fetchHeroDetails(selectedHeroKey);
 
             if (!heroDetails) {
-                return interaction.reply({ content: 'Could not retrieve hero details.', ephemeral: true });
+                return interaction.reply({ content: translations[lang].heroNotFound, ephemeral: true });
             }
 
             // Crear el embed con los detalles del héroe
-            const heroEmbed = createHeroEmbed(heroDetails);
+            const heroEmbed = createHeroEmbed(heroDetails, lang);
 
             // Responder con el embed
             await interaction.reply({ embeds: [heroEmbed], ephemeral: true });
         } catch (error) {
             console.error('Error fetching hero details:', error);
-            return interaction.reply({ content: 'An error occurred while fetching hero details.', ephemeral: true });
+            return interaction.reply({ content: translations[lang].heroDetailsError, ephemeral: true });
         }
     },
     async autocomplete(interaction) {
