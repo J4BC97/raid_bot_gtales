@@ -1,8 +1,8 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadEvents } = require('./utils/eventLoader');
 const http = require('http');
-const commandRegister = require('./utils/commandRegister');
 
 const client = new Client({
     intents: [
@@ -30,7 +30,7 @@ server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN)
+client.login(process.env.DISCORD_BOT_TOKEN) // Use environment variable
     .then(() => {
         console.log('Bot iniciado correctamente.');
     })
