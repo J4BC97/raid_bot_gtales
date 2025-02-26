@@ -15,11 +15,11 @@ module.exports = {
                 return interaction.reply({ content: 'Could not retrieve hero list.', ephemeral: true });
             }
 
-            // 2. Truncate labels and values to fit Discord's limits (if needed)
-            heroes = heroes.map(hero => {
-                const truncatedHero = hero.name.substring(0, 100); // Use hero.name and limit to 100
+            // 2. Truncate labels and values to fit Discord's limits and structure for addOptions
+            const selectOptions = heroes.map(hero => {
+                const truncatedHeroName = hero.name.substring(0, 100); // Limit to 100 characters
                 return {
-                    label: truncatedHero,
+                    label: truncatedHeroName,
                     value: hero.key, // Use hero.key as value
                 };
             });
@@ -28,17 +28,22 @@ module.exports = {
             const selectMenu = new StringSelectMenuBuilder()
                 .setCustomId('hero_select')
                 .setPlaceholder('Select a hero...')
-                .addOptions(heroes);
+                .addOptions(selectOptions); // Use the selectOptions array
 
             const actionRow = new ActionRowBuilder()
                 .addComponents(selectMenu);
 
             // 4. Send the initial response with the select menu
-            await interaction.reply({
-                content: 'Choose a hero to view their details:',
-                components: [actionRow],
-                ephemeral: true,
-            });
+            try {
+                await interaction.reply({
+                    content: 'Choose a hero to view their details:',
+                    components: [actionRow],
+                    ephemeral: true,
+                });
+            } catch (error) {
+                console.error("Error sending initial reply:", error);
+                return; // Exit if initial reply fails
+            }
 
             // 5. Create a collector to handle select menu interactions
             const collector = interaction.channel.createMessageComponentCollector({
@@ -69,7 +74,7 @@ module.exports = {
                             { name: 'HP', value: heroDetails.stats.hp || 'N/A', inline: true },
                             { name: 'Defense', value: heroDetails.stats.def || 'N/A', inline: true },
                         )
-                        .setFooter({text: `Key: ${heroDetails.key}`}) //Added key
+                        .setFooter({ text: `Key: ${heroDetails.key}` }) //Added key
                         .setThumbnail(`https://www.gtales.top${heroDetails.atr}` || 'https://via.placeholder.com/150');
 
                     // 8. Reply with the hero details embed (ephemeral)
@@ -82,7 +87,7 @@ module.exports = {
 
             collector.on('end', collected => {
                 if (collected.size === 0) {
-                    interaction.editReply({ content: 'Hero selection timed out.', components: [], ephemeral: true }); // Use interaction.editReply
+                    interaction.editReply({ content: 'Hero selection timed out.', components: [], ephemeral: true }).catch(console.error); // Use interaction.editReply and catch errors
                 }
             });
 
