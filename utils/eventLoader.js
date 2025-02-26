@@ -1,20 +1,20 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 module.exports = {
-    loadEvents(client) {
-        const eventsPath = path.join(__dirname, '../events'); // Ruta a la carpeta de eventos
+    loadEvents: async (client) => {
+        const eventsPath = path.join(__dirname, '../events');
         const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
         for (const file of eventFiles) {
-            const event = require(path.join(eventsPath, file));
-            if (event.once) {
-                client.once(event.name, (...args) => event.execute(...args, client));
+            const filePath = path.join(eventsPath, file);
+            const event = await import(filePath); // Use dynamic import
+            if (event.default.once) {
+                client.once(event.default.name, (...args) => event.default.execute(...args));
             } else {
-                client.on(event.name, (...args) => event.execute(...args, client));
+                client.on(event.default.name, (...args) => event.default.execute(...args));
             }
+            console.log(`Se cargaron ${eventFiles.length} eventos correctamente.`);
         }
-
-        console.log(`Se cargaron ${eventFiles.length} eventos correctamente.`);
-    },
-};
+    }
+}

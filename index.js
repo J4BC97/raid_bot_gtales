@@ -1,5 +1,4 @@
 require('dotenv').config(); // Load environment variables
-
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadEvents } = require('./utils/eventLoader');
 const http = require('http');
