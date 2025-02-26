@@ -1,7 +1,8 @@
-require('dotenv').config(); // Load environment variables
+require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadEvents } = require('./utils/eventLoader');
 const http = require('http');
+const commandRegister = require('./utils/commandRegister');
 
 const client = new Client({
     intents: [
@@ -29,21 +30,10 @@ server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 
-async function startBot() {
-    try {
-        // const commandRegister = require('./utils/commandRegister'); // Old require statement
-        const commandRegister = await import('./utils/commandRegister.js'); // Corrected import
-        client.login(process.env.DISCORD_BOT_TOKEN) // Use environment variable
-            .then(() => {
-                console.log('Bot iniciado correctamente.');
-            })
-            .catch((error) => {
-                console.error('Error al iniciar sesión en Discord:', error);
-            });
-    } catch (error) {
-        console.error("Error during bot startup:", error);
-    }
-
-}
-
-startBot();
+client.login(process.env.DISCORD_BOT_TOKEN)
+    .then(() => {
+        console.log('Bot iniciado correctamente.');
+    })
+    .catch((error) => {
+        console.error('Error al iniciar sesión en Discord:', error);
+    });
