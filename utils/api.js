@@ -5,7 +5,7 @@ const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL: 1 hour, check every 10 minutes
 
 module.exports = {
-  async getBossData(boss, element) {
+  async getBossData(boss = '', element = '') {
     const cacheKey = `${boss}-${element}`;
 
     try {
@@ -23,7 +23,6 @@ module.exports = {
       cache.set(cacheKey, response.data);
       return response.data;
     } catch (error) {
-      // Error handling (as discussed previously)
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
       console.error(errorMessage);
       throw new Error(errorMessage);

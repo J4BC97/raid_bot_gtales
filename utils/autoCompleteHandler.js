@@ -1,4 +1,4 @@
-const bosses = require('./bosses');
+const { getBossData } = require('./api');
 
 module.exports = {
     async handleAutocomplete(interaction) {
@@ -6,10 +6,11 @@ module.exports = {
         const choices = [];
 
         if (focusedOption.name === 'jefe') {
-            choices.push(...bosses.map(boss => ({ name: boss.name.toUpperCase(), value: boss.name })));
+            const bossData = await getBossData();
+            choices.push(...bossData.map(boss => ({ name: boss.name.toUpperCase(), value: boss.name })));
         } else if (focusedOption.name === 'elemento') {
             const selectedBoss = interaction.options.getString('jefe');
-            const bossData = bosses.find(boss => boss.name === selectedBoss);
+            const bossData = await getBossData(selectedBoss);
             if (bossData) {
                 choices.push(...bossData.elements.map(element => ({ name: element.toUpperCase(), value: element })));
             }
