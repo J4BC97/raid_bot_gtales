@@ -30,10 +30,15 @@ module.exports = {
         choice.name.toLowerCase().startsWith(focusedOption.value.toLowerCase())
       );
 
-      await interaction.respond(filtered.slice(0, 25));
+      // Asegúrate de que solo se responde una vez
+      if (!interaction.responded) {
+        await interaction.respond(filtered.slice(0, 25));
+      }
     } catch (error) {
       console.error('Error in handleAutocomplete:', error);
-      await interaction.respond([]); // Respond with an empty array in case of error
+      if (!interaction.responded) {
+        await interaction.respond([]); // Responder con un array vacío en caso de error
+      }
     }
   },
 };

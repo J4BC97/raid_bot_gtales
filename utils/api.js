@@ -15,7 +15,13 @@ module.exports = {
         return cachedData;
       }
 
-      const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
+      // Solo incluir el parámetro 'element' si tiene un valor
+      const params = { boss };
+      if (element) {
+        params.element = element;
+      }
+
+      const url = `https://www.gtales.top/api/raids?${new URLSearchParams(params)}`;
       console.log(`Fetching data from URL: ${url}`);
 
       const response = await axios.get(url, {

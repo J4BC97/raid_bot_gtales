@@ -1,5 +1,5 @@
 const { handleAutocomplete } = require('../utils/autoCompleteHandler');
-const { handleHeroAutocomplete } = require('../utils/heroAutoCompleteHandler'); // Importar el nuevo manejador
+const { handleHeroAutocomplete } = require('../utils/heroAutoCompleteHandler');
 const { handleCommand } = require('../utils/commandHandler');
 
 module.exports = {
@@ -9,9 +9,9 @@ module.exports = {
       // Manejar autocompletado
       if (interaction.isAutocomplete()) {
         if (interaction.commandName === 'heroes') {
-          await handleHeroAutocomplete(interaction); // Manejar autocompletado para héroes
+          await handleHeroAutocomplete(interaction);
         } else {
-          await handleAutocomplete(interaction); // Manejar autocompletado para otros comandos
+          await handleAutocomplete(interaction);
         }
         return; // Salir después de manejar el autocompletado
       }
@@ -28,8 +28,12 @@ module.exports = {
       console.error('Error en interactionCreate:', error);
 
       // Responder al usuario en caso de error
-      if (interaction.isChatInputCommand() || interaction.isAutocomplete()) {
+      if (interaction.isChatInputCommand()) {
         await interaction.reply({ content: 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.', ephemeral: true });
+      } else if (interaction.isAutocomplete()) {
+        if (!interaction.responded) {
+          await interaction.respond([]); // Responder con un array vacío en caso de error
+        }
       }
     }
   },
