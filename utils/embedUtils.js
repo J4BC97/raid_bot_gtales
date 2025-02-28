@@ -27,6 +27,9 @@ module.exports = {
         });
     }
 
+    // Obtener las imágenes de los héroes
+    const heroImages = team.heroesAtr?.map(heroAtr => `https://www.gtales.top/assets/heroes/${heroAtr}.webp`) || [];
+
     const heroesInfo = team.heroes.map((hero, index) => {
       const weapon = team.weapons?.[index] || 'No disponible';
       const cards = team.cards?.[index] || 'No disponible';
@@ -57,7 +60,8 @@ module.exports = {
     const translatedRelic = translations.relic[team.relic] || team.relic || 'No disponible';
     let damageInfo = team.dmg ? String(team.dmg) : 'No disponible';
 
-    return new EmbedBuilder()
+    // Crear el embed con las imágenes de los héroes
+    const embed = new EmbedBuilder()
       .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
       .addFields(
         { name: '👥 Héroes, Armas, Cartas y Accesorios', value: heroesInfo, inline: false },
@@ -71,6 +75,14 @@ module.exports = {
       .setFooter({
         text: `Temporada: ${team.season} | Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}\nDatos proporcionados por Guardian Tales TOP`,
       });
+
+    // Agregar las imágenes de los héroes al embed
+    if (heroImages.length > 0) {
+      embed.setImage(heroImages[0]); // Mostrar la primera imagen como la imagen principal del embed
+      embed.setThumbnail(heroImages[1] || heroImages[0]); // Mostrar la segunda imagen como miniatura (o la primera si no hay segunda)
+    }
+
+    return embed;
   },
 
   createButtons(page, totalPages) {
