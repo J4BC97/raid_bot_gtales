@@ -7,11 +7,13 @@ module.exports = {
 
         if (focusedOption.name === 'jefe') {
             const bossData = await getBossData();
-            choices.push(...bossData.map(boss => ({ name: boss.name.toUpperCase(), value: boss.name })));
+            if (Array.isArray(bossData)) {
+                choices.push(...bossData.map(boss => ({ name: boss.name.toUpperCase(), value: boss.name })));
+            }
         } else if (focusedOption.name === 'elemento') {
             const selectedBoss = interaction.options.getString('jefe');
             const bossData = await getBossData(selectedBoss);
-            if (bossData) {
+            if (bossData && Array.isArray(bossData.elements)) {
                 choices.push(...bossData.elements.map(element => ({ name: element.toUpperCase(), value: element })));
             }
         }

@@ -20,8 +20,14 @@ module.exports = {
           rejectUnauthorized: false,
         }),
       });
-      cache.set(cacheKey, response.data);
-      return response.data;
+
+      const data = response.data;
+      if (Array.isArray(data)) {
+        cache.set(cacheKey, data);
+        return data;
+      } else {
+        throw new Error('API response is not an array');
+      }
     } catch (error) {
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
       console.error(errorMessage);
