@@ -42,6 +42,8 @@ module.exports = {
         data = [data];
       }
 
+      console.log('API Response:', data); // <-- Añade este console.log para ver la respuesta
+
       cache.set(cacheKey, data);
       return data;
     } catch (error) {
