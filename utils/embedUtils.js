@@ -27,8 +27,13 @@ module.exports = {
         });
     }
 
-    // Obtener las imágenes de los héroes
+    // Obtener las URLs de las imágenes de los héroes
     const heroImages = team.heroesAtr?.map(heroAtr => `https://www.gtales.top/assets/heroes/${heroAtr}.webp`) || [];
+
+    // Crear una fila de imágenes usando texto con enlaces
+    const heroImageRow = heroImages.map((imageUrl, index) => {
+      return `[${team.heroes[index]}](${imageUrl})`;
+    }).join(' '); // Unir las imágenes en una sola línea
 
     const heroesInfo = team.heroes.map((hero, index) => {
       const weapon = team.weapons?.[index] || 'No disponible';
@@ -60,10 +65,11 @@ module.exports = {
     const translatedRelic = translations.relic[team.relic] || team.relic || 'No disponible';
     let damageInfo = team.dmg ? String(team.dmg) : 'No disponible';
 
-    // Crear el embed con las imágenes de los héroes
+    // Crear el embed con las imágenes de los héroes en una fila
     const embed = new EmbedBuilder()
       .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
       .addFields(
+        { name: '👥 Héroes', value: heroImageRow, inline: false }, // Fila de imágenes
         { name: '👥 Héroes, Armas, Cartas y Accesorios', value: heroesInfo, inline: false },
         { name: '⏳ Tiempos de Cadena', value: chainsInfo, inline: false },
         { name: '📜 Reliquia', value: translatedRelic, inline: false },
@@ -75,12 +81,6 @@ module.exports = {
       .setFooter({
         text: `Temporada: ${team.season} | Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}\nDatos proporcionados por Guardian Tales TOP`,
       });
-
-    // Agregar las imágenes de los héroes al embed
-    if (heroImages.length > 0) {
-      embed.setImage(heroImages[0]); // Mostrar la primera imagen como la imagen principal del embed
-      embed.setThumbnail(heroImages[1] || heroImages[0]); // Mostrar la segunda imagen como miniatura (o la primera si no hay segunda)
-    }
 
     return embed;
   },
