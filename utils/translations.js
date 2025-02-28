@@ -24,7 +24,10 @@ module.exports = {
         "atk7-crit": "Ataque 7% + Prob. Critica",
         "atk7-earth": "Ataque 7% + Atq. Tierra 7%",
         "crit-atk7": "Prob. Critica + Ataque 7% ",
-        "crit-dark": "Prob. Critica + Atq. Oscuridad 7%"
+        "crit-dark": "Prob. Critica + Atq. Oscuridad 7%",
+        "atk7-dark": "Ataque 7% + Atq. Oscuridad 7%",
+        "atk7-water": "Ataque 7% + Atq. Agua 7%",
+        "atk7-light": "Ataque 7% + Atq. Luz 7%",
     },
     relic: {
         book: "Libro",
@@ -77,7 +80,7 @@ module.exports = {
         "1st Corps Commander": "Espada de 1st Corps Commander",
         "Lilith": "Espada de Lilith",
         "Beth": "Espada de Beth",
-        "dark": "Arma Oscura",
+        "dark": "Arma de Elemento Oscuridad",
         "Plague Doctor": "Báculo de Plague Doctor",
         "lah2": "Lahn 2da EX",
         "Yuze (Beach)": "Lanza de Yuze (Playa)",
