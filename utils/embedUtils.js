@@ -3,6 +3,17 @@ const translations = require('./translations');
 
 module.exports = {
   createEmbed(bossData, selectedBoss, selectedElement, page) {
+    // Verificar si bossData es un array y si la página es válida
+    if (!Array.isArray(bossData) || page < 0 || page >= bossData.length) {
+      return new EmbedBuilder()
+        .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
+        .setDescription('No se encontraron datos válidos para este equipo.')
+        .setColor('#ff0000') // Rojo para indicar un error
+        .setFooter({
+          text: `Datos proporcionados por Guardian Tales TOP`,
+        });
+    }
+
     const team = bossData[page];
 
     // Verificar si el equipo es válido
