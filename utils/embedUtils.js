@@ -32,19 +32,23 @@ module.exports = {
 
     // Crear una fila de imágenes usando enlaces con miniaturas
     const heroImageRow = heroImages.map((imageUrl, index) => {
-      return `[${team.heroes[index]}](${imageUrl})`;
+      const heroName = team.heroes[index];
+      const translatedHero = translations.heroes[heroName] || heroName;
+      return `[${translatedHero}](${imageUrl})`;
     }).join(' '); // Unir las imágenes en una sola línea
 
     const heroesInfo = team.heroes.map((hero, index) => {
       const weapon = team.weapons?.[index] || 'No disponible';
+      const translatedWeapon = translations.weapons[weapon] || weapon;
       const cards = team.cards?.[index] || 'No disponible';
       const accessories = team.access?.[index] || 'No disponible';
 
       const translatedAccessories = translations.access[accessories] || accessories;
       const translatedCards = translations.cards[cards] || cards;
+      const translatedHero = translations.heroes[hero] || hero;
 
-      return `**${hero}**\n` +
-             `- **Arma:** ${weapon}\n` +
+      return `**${translatedHero}**\n` +
+             `- **Arma:** ${translatedWeapon}\n` +
              `- **Cartas:** ${translatedCards}\n` +
              `- **Accesorios:** ${translatedAccessories}`;
     }).join('\n\n');
