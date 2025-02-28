@@ -22,6 +22,9 @@ module.exports = {
         "atk7-atk7": "Ataque 7% + Ataque 7%",
         "skill-atk7": "Daño de Hab. + Ataque 7%",
         "atk7-crit": "Ataque 7% + Prob. Critica",
+        "atk7-earth": "Ataque 7% + Atq. Tierra 7%",
+        "crit-atk7": "Prob. Critica + Ataque 7% ",
+        "crit-dark": "Prob. Critica + Atq. Oscuridad 7%"
     },
     relic: {
         book: "Libro",
@@ -32,7 +35,7 @@ module.exports = {
     chains: {
         "P1": "Parte 1",
         "P2": "Parte 2",
-        "WS": "Weapon Skill",
+        "WS": "Habilidad de Arma",
     },
     infos: {
         "def": "Defensa",
@@ -54,7 +57,7 @@ module.exports = {
         "Beth": "Beth",
         "Rey": "Rey",
         "Plague Doctor": "Plague Doctor",
-        "lah2": "Laharl (2nd Armada)",
+        "lah2": "Lahn (2da EX)",
         "Yuze (Beach)": "Yuze (Playa)",
         "White Snow": "White Snow",
         "Angie": "Angie",
@@ -68,7 +71,7 @@ module.exports = {
         "Dohwa": "Lanza de Dohwa",
         "Eunha": "Arco de Eunha",
         "Nari": "Báculo de Nari",
-        "ogh2": "Martillo de Oghma",
+        "ogh2": "Oghma 2da EX",
         "Vinette": "Espada de Vinette",
         "Claude": "Lanza de Claude",
         "1st Corps Commander": "Espada de 1st Corps Commander",
@@ -76,7 +79,7 @@ module.exports = {
         "Beth": "Espada de Beth",
         "dark": "Arma Oscura",
         "Plague Doctor": "Báculo de Plague Doctor",
-        "lah2": "Espada de Laharl",
+        "lah2": "Lahn 2da EX",
         "Yuze (Beach)": "Lanza de Yuze (Playa)",
         "White Snow": "Báculo de White Snow",
         "Angie": "Arco de Angie",
