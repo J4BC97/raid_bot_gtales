@@ -16,17 +16,7 @@ module.exports = {
       }
 
       // Construir la URL según los parámetros proporcionados
-      let url;
-      if (!boss && !element) {
-        // Si no se proporciona ningún parámetro, obtener la lista completa de jefes
-        url = 'https://www.gtales.top/api/raids';
-      } else if (boss && element) {
-        // Si se proporciona un jefe y un elemento, obtener los equipos recomendados
-        url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
-      } else {
-        throw new Error('Both boss and element parameters are required for team data.');
-      }
-
+      const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
       console.log(`Fetching data from URL: ${url}`);
 
       const response = await axios.get(url, {
@@ -35,14 +25,13 @@ module.exports = {
         }),
       });
 
-      // Asegurarse de que la respuesta sea un array
-      let data = response.data.list;
-      if (!Array.isArray(data)) {
-        // Si la respuesta no es un array, convertirlo en un array
-        data = [data];
+      // Verificar si la respuesta tiene la estructura esperada
+      if (!response.data || !Array.isArray(response.data.list)) {
+        throw new Error('La respuesta de la API no tiene la estructura esperada.');
       }
 
-      console.log('API Response:', data); // <-- Añade este console.log para ver la respuesta
+      const data = response.data.list;
+      console.log('API Response:', data); // <-- Verifica la respuesta aquí
 
       cache.set(cacheKey, data);
       return data;
