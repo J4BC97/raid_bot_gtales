@@ -9,11 +9,11 @@ module.exports = {
     const cacheKey = `${boss}-${element}`;
 
     try {
-      const cachedData = cache.get(cacheKey);
-      if (cachedData) {
-        console.log(`Returning cached data for ${boss} ${element}`);
-        return cachedData;
-      }
+      // const cachedData = cache.get(cacheKey);
+      // if (cachedData) {
+      //   console.log(`Returning cached data for ${boss} ${element}`);
+      //   return cachedData;
+      // }
 
       // Construir la URL según los parámetros proporcionados
       const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
