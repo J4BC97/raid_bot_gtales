@@ -9,11 +9,11 @@ module.exports = {
     const cacheKey = `${boss}-${element}`;
 
     try {
-      // const cachedData = cache.get(cacheKey);
-      // if (cachedData) {
-      //   console.log(`Returning cached data for ${boss} ${element}`);
-      //   return cachedData;
-      // }
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Returning cached data for ${boss} ${element}`);
+        return cachedData;
+      }
 
       // Construir la URL según los parámetros proporcionados
       const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
@@ -26,11 +26,16 @@ module.exports = {
       });
 
       // Verificar si la respuesta tiene la estructura esperada
-      if (!response.data || !Array.isArray(response.data.list)) {
-        throw new Error('La respuesta de la API no tiene la estructura esperada.');
+      let data = response.data;
+
+      // Si la respuesta tiene un campo "list", usarlo
+      if (data && data.list && Array.isArray(data.list)) {
+        data = data.list;
+      } else if (!Array.isArray(data)) {
+        // Si no es un array, convertirlo en un array
+        data = [data];
       }
 
-      const data = response.data.list;
       console.log('API Response:', data); // <-- Verifica la respuesta aquí
 
       cache.set(cacheKey, data);

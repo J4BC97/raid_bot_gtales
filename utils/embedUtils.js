@@ -3,9 +3,6 @@ const translations = require('./translations');
 
 module.exports = {
   createEmbed(bossData, selectedBoss, selectedElement, page) {
-    console.log('bossData:', bossData); // <-- Añade este console.log
-    console.log('Page:', page); // <-- Añade este console.log
-
     // Verificar si bossData es un array y si la página es válida
     if (!Array.isArray(bossData) || page < 0 || page >= bossData.length) {
       return new EmbedBuilder()
@@ -18,7 +15,6 @@ module.exports = {
     }
 
     const team = bossData[page];
-    console.log('Team:', team); // <-- Añade este console.log
 
     // Verificar si el equipo es válido
     if (!team || !team.heroes || !Array.isArray(team.heroes)) {
