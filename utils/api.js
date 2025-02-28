@@ -21,12 +21,12 @@ module.exports = {
         }),
       });
 
-      const data = response.data;
+      const data = response.data.list;
       if (Array.isArray(data)) {
         cache.set(cacheKey, data);
         return data;
       } else {
-        throw new Error('API response is not an array');
+        throw new Error('API response list is not an array');
       }
     } catch (error) {
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
