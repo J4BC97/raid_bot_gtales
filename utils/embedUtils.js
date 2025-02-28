@@ -63,7 +63,17 @@ module.exports = {
     }
 
     const translatedRelic = translations.relic[team.relic] || team.relic || 'No disponible';
-    let damageInfo = team.dmg ? String(team.dmg) : 'No disponible';
+
+    // Manejar el daño según la versión
+    let damageInfo = 'No disponible';
+    if (team.version === 1) {
+      damageInfo = team.dmg ? String(team.dmg) : 'No disponible';
+    } else if (team.version === 2) {
+      damageInfo = team.dmg ? `Daño base: ${team.dmg}` : 'No disponible';
+      if (team.feverDmg) {
+        damageInfo += `\nDaño con Fever: ${team.feverDmg}`;
+      }
+    }
 
     // Crear el embed con la fila de imágenes y la información del equipo
     const embed = new EmbedBuilder()
