@@ -24,12 +24,12 @@ module.exports = {
       const bossData = await getBossData(selectedBoss, selectedElement);
 
       // Verificar si bossData es válido y es un array
-      if (!bossData || !Array.isArray(bossData) || bossData.length === 0) {
-        return interaction.reply({
-          content: 'No se encontraron equipos recomendados para este jefe y elemento.',
-          ephemeral: true,
-        });
-      }
+    //   if (!bossData || !Array.isArray(bossData) || bossData.length === 0) {
+    //     return interaction.reply({
+    //       content: 'No se encontraron equipos recomendados para este jefe y elemento.',
+    //       ephemeral: true,
+    //     });
+    //   }
 
       let currentPage = 0;
 
