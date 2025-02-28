@@ -33,9 +33,12 @@ module.exports = {
 
       let currentPage = 0;
 
-      // Responder con el embed y los botones de paginación
+      // Obtener los embeds (principal + héroes)
+      const embeds = createEmbed(bossData, selectedBoss, selectedElement, currentPage);
+
+      // Responder con los embeds y los botones de paginación
       await interaction.reply({
-        embeds: [createEmbed(bossData, selectedBoss, selectedElement, currentPage)],
+        embeds: embeds, // Enviar todos los embeds
         components: [createButtons(currentPage, bossData.length)],
         ephemeral: true,
       });
@@ -54,14 +57,14 @@ module.exports = {
           currentPage = Math.min(bossData.length - 1, page + 1);
         }
 
-        // Actualizar el embed y los botones con la nueva página
+        // Actualizar los embeds y los botones con la nueva página
+        const updatedEmbeds = createEmbed(bossData, selectedBoss, selectedElement, currentPage);
         await i.update({
-          embeds: [createEmbed(bossData, selectedBoss, selectedElement, currentPage)],
+          embeds: updatedEmbeds,
           components: [createButtons(currentPage, bossData.length)],
         });
       });
 
-      // Deshabilitar los botones cuando el collector termine
       collector.on('end', async () => {
         await interaction.editReply({ components: [] });
       });
