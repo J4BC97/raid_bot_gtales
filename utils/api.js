@@ -15,7 +15,9 @@ module.exports = {
         return cachedData;
       }
 
-      const response = await axios.get(`https://www.gtales.top/api/raids?boss=${boss}&element=${element}`, {
+      const url = `https://www.gtales.top/api/raids?boss=${boss}&element=${element}`;
+      console.log(`Fetching data from URL: ${url}`); // Log the URL for debugging
+      const response = await axios.get(url, {
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
         }),
