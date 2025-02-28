@@ -14,10 +14,12 @@ module.exports = {
       } else if (focusedOption.name === 'elemento') {
         const selectedBoss = interaction.options.getString('jefe');
         if (selectedBoss) {
-          const bossData = await getBossData(selectedBoss);
-          const boss = bossData.find(b => b.boss === selectedBoss);
-          if (boss && Array.isArray(boss.element)) {
-            choices.push(...boss.element.map(element => ({ name: element.toUpperCase(), value: element })));
+          const bossData = await getBossData(selectedBoss, ''); // Pasar el jefe y un elemento vacío
+          if (Array.isArray(bossData)) {
+            const boss = bossData.find(b => b.boss === selectedBoss);
+            if (boss && Array.isArray(boss.element)) {
+              choices.push(...boss.element.map(element => ({ name: element.toUpperCase(), value: element })));
+            }
           }
         } else {
           console.error('No boss selected for element autocomplete');

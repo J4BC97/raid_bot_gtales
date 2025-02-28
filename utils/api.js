@@ -2,7 +2,7 @@ const axios = require('axios');
 const https = require('https');
 const NodeCache = require('node-cache');
 
-const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL: 1 hour, check every 10 minutes
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 module.exports = {
   async getBossData(boss = '', element = '') {
@@ -16,7 +16,7 @@ module.exports = {
       }
 
       const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
-      console.log(`Fetching data from URL: ${url}`); // Log the URL for debugging
+      console.log(`Fetching data from URL: ${url}`);
 
       const response = await axios.get(url, {
         httpsAgent: new https.Agent({
