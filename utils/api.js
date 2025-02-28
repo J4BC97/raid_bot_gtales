@@ -15,13 +15,20 @@ module.exports = {
         return cachedData;
       }
 
-      // Solo incluir el parámetro 'element' si tiene un valor
-      const params = { boss };
-      if (element) {
-        params.element = element;
+      // Construir la URL según los parámetros proporcionados
+      let url;
+      if (!boss && !element) {
+        // Si no se proporciona ningún parámetro, obtener la lista completa de jefes
+        url = 'https://www.gtales.top/api/raids';
+      } else {
+        // Si se proporciona un jefe, incluir el parámetro 'boss' y 'element' si está presente
+        const params = new URLSearchParams({ boss });
+        if (element) {
+          params.append('element', element);
+        }
+        url = `https://www.gtales.top/api/raids?${params.toString()}`;
       }
 
-      const url = `https://www.gtales.top/api/raids?${new URLSearchParams(params)}`;
       console.log(`Fetching data from URL: ${url}`);
 
       const response = await axios.get(url, {
