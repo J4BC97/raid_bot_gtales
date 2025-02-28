@@ -20,13 +20,11 @@ module.exports = {
       if (!boss && !element) {
         // Si no se proporciona ningún parámetro, obtener la lista completa de jefes
         url = 'https://www.gtales.top/api/raids';
+      } else if (boss && element) {
+        // Si se proporciona un jefe y un elemento, obtener los equipos recomendados
+        url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
       } else {
-        // Si se proporciona un jefe, incluir el parámetro 'boss' y 'element' si está presente
-        const params = new URLSearchParams({ boss });
-        if (element) {
-          params.append('element', element);
-        }
-        url = `https://www.gtales.top/api/raids?${params.toString()}`;
+        throw new Error('Both boss and element parameters are required for team data.');
       }
 
       console.log(`Fetching data from URL: ${url}`);
