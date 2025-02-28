@@ -35,13 +35,15 @@ module.exports = {
         }),
       });
 
-      const data = response.data.list;
-      if (Array.isArray(data)) {
-        cache.set(cacheKey, data);
-        return data;
-      } else {
-        throw new Error('API response list is not an array');
+      // Asegurarse de que la respuesta sea un array
+      let data = response.data.list;
+      if (!Array.isArray(data)) {
+        // Si la respuesta no es un array, convertirlo en un array
+        data = [data];
       }
+
+      cache.set(cacheKey, data);
+      return data;
     } catch (error) {
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
       console.error(errorMessage);
