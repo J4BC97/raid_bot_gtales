@@ -15,8 +15,9 @@ module.exports = {
         return cachedData;
       }
 
-      const url = `https://www.gtales.top/api/raids?boss=${boss}&element=${element}`;
+      const url = `https://www.gtales.top/api/raids?boss=${encodeURIComponent(boss)}&element=${encodeURIComponent(element)}`;
       console.log(`Fetching data from URL: ${url}`); // Log the URL for debugging
+
       const response = await axios.get(url, {
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
@@ -33,6 +34,9 @@ module.exports = {
     } catch (error) {
       const errorMessage = `Error fetching boss data for ${boss} ${element}: ${error.message}`;
       console.error(errorMessage);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+      }
       throw new Error(errorMessage);
     }
   },
