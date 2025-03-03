@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const translations = require('../heroesUtils/raidTranslations');
+const translations = require('../../translations/raidTranslations');
 
 module.exports = {
   createEmbed(bossData, selectedBoss, selectedElement, page) {
