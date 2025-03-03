@@ -1,4 +1,5 @@
 // utils/translations.js
+// utils/translations.js
 module.exports = {
     en: {
         heroNotFound: "Could not retrieve hero details.",
@@ -24,6 +25,7 @@ module.exports = {
         effect: "Effect",
         stats: "Stats",
         options: "Options",
+        heroInfoIncomplete: "The information for this hero is incomplete.", // Nuevo mensaje
     },
     es: {
         heroNotFound: "No se pudieron obtener los detalles del héroe.",
@@ -49,5 +51,6 @@ module.exports = {
         effect: "Efecto",
         stats: "Estadísticas",
         options: "Opciones",
+        heroInfoIncomplete: "La información de este héroe está incompleta.", // Nuevo mensaje
     },
 };

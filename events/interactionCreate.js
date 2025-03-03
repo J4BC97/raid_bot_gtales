@@ -1,5 +1,5 @@
-const { handleAutocomplete } = require('../utils/autoCompleteHandler');
-const { handleHeroAutocomplete } = require('../utils/heroAutoCompleteHandler');
+const { handleAutocomplete } = require('../utils/raidUtils/raidAutoCompleteHandler');
+const { handleHeroAutocomplete } = require('../utils/heroesUtils/heroAutoCompleteHandler');
 const { handleCommand } = require('../utils/commandHandler');
 
 module.exports = {

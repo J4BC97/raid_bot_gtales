@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { fetchHeroes, fetchHeroDetails } = require('../utils/heroApi');
-const { createHeroEmbed } = require('../utils/heroEmbed');
-const translations = require('../utils/heroTranslations');
+const { fetchHeroes, fetchHeroDetails } = require('../utils/heroesUtils/heroApi');
+const { createHeroEmbed } = require('../utils/heroesUtils/heroEmbed');
+const translations = require('../translations/heroTranslations');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,6 +22,12 @@ module.exports = {
 
             if (!heroDetails) {
                 return interaction.reply({ content: translations[lang].heroNotFound, ephemeral: true });
+            }
+
+            // Verificar si el héroe está disponible
+            if (!heroDetails.available) {
+                const embed = createHeroEmbed(heroDetails, lang, true); // Pasar true para indicar que la información está incompleta
+                return interaction.reply({ embeds: [embed], content: translations[lang].heroInfoIncomplete, ephemeral: true });
             }
 
             // Crear el embed con los detalles del héroe

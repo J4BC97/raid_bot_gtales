@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const translations = require('./heroTranslations'); // Importar las traducciones
+const translations = require('../../translations/heroTranslations'); // Importar las traducciones
 
 // Función para validar si una URL es válida
 function isValidUrl(url) {
@@ -12,7 +12,7 @@ function isValidUrl(url) {
 }
 
 // Función para crear el embed con los detalles del héroe
-function createHeroEmbed(heroDetails, lang = 'en') {
+function createHeroEmbed(heroDetails, lang = 'en', isIncomplete = false) {
     const t = translations[lang]; // Obtener las traducciones para el idioma seleccionado
 
     // Definir colores según el elemento del héroe
@@ -31,9 +31,28 @@ function createHeroEmbed(heroDetails, lang = 'en') {
     // Crear el embed
     const embed = new EmbedBuilder()
         .setTitle(`**${heroDetails.name || 'Unknown Hero'}**`)
-        .setDescription(`**${t.role}:** ${heroDetails.role || 'N/A'} | **${t.element}:** ${heroDetails.element || 'N/A'}`)
         .setColor(embedColor) // Color dinámico basado en el elemento
         .setFooter({ text: `Key: ${heroDetails.key}` });
+
+    // Si la información está incompleta, mostrar solo la imagen y un mensaje
+    if (isIncomplete) {
+        embed.setDescription(t.heroInfoIncomplete || 'Información incompleta');
+
+        // Construir la URL del thumbnail del héroe
+        if (heroDetails.atr) {
+            const heroThumbnailUrl = `https://gtales.top/assets/heroes/${heroDetails.atr}.webp`;
+            if (isValidUrl(heroThumbnailUrl)) {
+                embed.setThumbnail(heroThumbnailUrl);
+            } else {
+                console.warn(`Invalid hero thumbnail URL for ${heroDetails.name}: ${heroThumbnailUrl}`);
+            }
+        }
+
+        return embed;
+    }
+
+    // Si la información está completa, mostrar todos los detalles
+    embed.setDescription(`**${t.role}:** ${heroDetails.role || 'N/A'} | **${t.element}:** ${heroDetails.element || 'N/A'}`);
 
     // Añadir campos de información básica
     embed.addFields(

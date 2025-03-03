@@ -1,4 +1,4 @@
-const { getBossData } = require('./api');
+const { getBossData } = require('../raidUtils/raidApi');
 
 module.exports = {
   async handleAutocomplete(interaction) {
