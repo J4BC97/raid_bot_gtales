@@ -10,7 +10,7 @@ module.exports = {
         .setDescription('No se encontraron datos válidos para este equipo.')
         .setColor('#ff0000') // Rojo para indicar un error
         .setFooter({
-          text: `Datos proporcionados por Guardian Tales TOP`,
+          text: `Datos proporcionados por Guardian Tales TOP: https://www.gtales.top/api`,
         });
     }
 
@@ -93,7 +93,7 @@ module.exports = {
       )
       .setColor('#0099ff')
       .setFooter({
-        text: `Temporada: ${team.season} | Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}\nDatos proporcionados por Guardian Tales TOP`,
+        text: `Temporada: ${team.season} | Recomendado por: ${team.player || 'Desconocido'} | Página ${page + 1} de ${bossData.length}\nDatos proporcionados por Guardian Tales TOP: https://www.gtales.top/api`,
       });
 
     return [embed]; // Devolver un array con un solo embed

@@ -30,9 +30,9 @@ function createHeroEmbed(heroDetails, lang = 'en', isIncomplete = false) {
 
     // Crear el embed
     const embed = new EmbedBuilder()
-        .setTitle(`**${heroDetails.name || 'Unknown Hero'}**`)
+        .setTitle(`**${heroDetails.name || 'Heroe Desconocido'}**`)
         .setColor(embedColor) // Color dinámico basado en el elemento
-        .setFooter({ text: `Key: ${heroDetails.key}` });
+        .setFooter({ text: `Datos proporcionados por Guardian Tales TOP: https://www.gtales.top/api` });
 
     // Si la información está incompleta, mostrar solo la imagen y un mensaje
     if (isIncomplete) {
