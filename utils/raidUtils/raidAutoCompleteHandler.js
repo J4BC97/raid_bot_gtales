@@ -1,7 +1,7 @@
 const { getBossData } = require('../raidUtils/raidApi');
 
 module.exports = {
-  async handleAutocomplete(interaction) {
+  async handleRaidAutocomplete(interaction) { // Cambiar el nombre de la función
     const focusedOption = interaction.options.getFocused(true);
     const choices = [];
 
@@ -34,7 +34,7 @@ module.exports = {
       // Responder con las opciones filtradas (máximo 25)
       await interaction.respond(filtered.slice(0, 25));
     } catch (error) {
-      console.error('Error in handleAutocomplete:', error);
+      console.error('Error in handleRaidAutocomplete:', error); // Cambiar el nombre del error
       await interaction.respond([]); // Responder con un array vacío en caso de error
     }
   },

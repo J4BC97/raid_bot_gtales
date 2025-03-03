@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js'); // Añadir MessageFlags
 const { getBossData } = require('../utils/raidUtils/raidApi');
 const { createEmbed, createButtons } = require('../utils/raidUtils/raidEmbed');
 
@@ -27,7 +27,7 @@ module.exports = {
       if (!bossData || !Array.isArray(bossData) || bossData.length === 0) {
         return interaction.reply({
           content: 'No se encontraron equipos recomendados para este jefe y elemento.',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral, // Cambiar aquí
         });
       }
 
@@ -40,7 +40,7 @@ module.exports = {
       await interaction.reply({
         embeds: embeds, // Enviar todos los embeds
         components: [createButtons(currentPage, bossData.length)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral, // Cambiar aquí
       });
 
       // Manejar paginación
@@ -72,7 +72,7 @@ module.exports = {
       console.error('Error en el comando raid:', error);
       await interaction.reply({
         content: 'Hubo un error al obtener los datos del jefe. Por favor, inténtalo de nuevo.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral, // Cambiar aquí
       });
     }
   },
