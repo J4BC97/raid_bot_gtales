@@ -28,11 +28,11 @@ module.exports = {
         });
     }
 
-    // Crear un canvas para la imagen de héroes y armas
-    const canvas = createCanvas(1000, 300); // Aumentamos el ancho y alto del canvas
+    // Crear un canvas para la imagen de héroes, armas y reliquia
+    const canvas = createCanvas(1000, 400); // Aumentamos el alto para incluir la reliquia
     const ctx = canvas.getContext('2d');
 
-    // Cargar las imágenes de los héroes y armas
+    // Cargar las imágenes de los héroes, armas y reliquia
     const heroImages = await Promise.all(team.heroesAtr.map(async (heroAtr) => {
       return await loadImage(`https://www.gtales.top/assets/heroes/${heroAtr}.webp`);
     }));
@@ -41,11 +41,14 @@ module.exports = {
       return await loadImage(`https://www.gtales.top/assets/weapons/${weaponAtr}.webp`);
     }));
 
+    const relicImage = await loadImage(`https://www.gtales.top/assets/relics/${team.relic}.webp`);
+
     // Dibujar las imágenes en el canvas
     let x = 50; // Posición inicial en X
     const y = 50; // Posición en Y
-    const spacing = 200; // Espaciado entre imágenes (aumentado para que las armas no se corten)
+    const spacing = 200; // Espaciado entre imágenes
 
+    // Dibujar héroes y armas
     heroImages.forEach((image, index) => {
       // Dibujar héroe (100x100)
       ctx.drawImage(image, x, y, 100, 100);
@@ -57,6 +60,9 @@ module.exports = {
       x += spacing;
     });
 
+    // Dibujar la reliquia debajo de las armas
+    ctx.drawImage(relicImage, 50, y + 260, 100, 100); // Reliquia en la parte inferior
+
     // Convertir el canvas a un buffer de imagen
     const buffer = canvas.toBuffer('image/png');
 
@@ -66,7 +72,11 @@ module.exports = {
       .setImage('attachment://team.png') // La imagen se mostrará arriba del embed
       .setColor('#0099ff')
       .addFields(
-        { name: '📜 Reliquia', value: translations.relic[team.relic] || team.relic || 'No disponible', inline: false },
+        // Agregar información de cartas (cards) arriba del daño
+        { name: '🃏 Cartas', value: team.cards.map((card, index) => {
+          const translatedCard = translations.cards[card] || card;
+          return `**${team.heroes[index]}:** ${translatedCard}`;
+        }).join('\n'), inline: false },
         { name: '💥 Daño', value: team.dmg ? `Daño base: ${team.dmg}` : 'No disponible', inline: false },
         { name: '🎥 Video Parte 1', value: team.videoP1 || 'No disponible', inline: false },
         { name: '🎥 Video Parte 2', value: team.videoP2 || 'No disponible', inline: false },
