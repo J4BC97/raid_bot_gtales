@@ -1,5 +1,3 @@
-// utils/translations.js
-// utils/translations.js
 module.exports = {
     en: {
         heroNotFound: "Could not retrieve hero details.",

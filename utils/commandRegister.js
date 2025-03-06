@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { loadCommands } = require('./commandLoader'); // Importa el cargador de comandos
+const { loadCommands } = require('./commandLoader');
 
 module.exports = {
     async registerCommands(client) {
@@ -8,7 +8,7 @@ module.exports = {
         try {
             console.log('Started refreshing application (/) commands.');
 
-            const commands = loadCommands(); // Carga los comandos
+            const commands = loadCommands();
             await rest.put(
                 Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
                 { body: commands.map(command => command.data.toJSON()) },
