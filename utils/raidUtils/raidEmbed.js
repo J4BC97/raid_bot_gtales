@@ -29,7 +29,7 @@ module.exports = {
     }
 
     // Crear un canvas para la imagen de héroes y armas
-    const canvas = createCanvas(800, 200); // Tamaño del canvas (ancho x alto)
+    const canvas = createCanvas(1000, 300); // Aumentamos el ancho y alto del canvas
     const ctx = canvas.getContext('2d');
 
     // Cargar las imágenes de los héroes y armas
@@ -44,11 +44,16 @@ module.exports = {
     // Dibujar las imágenes en el canvas
     let x = 50; // Posición inicial en X
     const y = 50; // Posición en Y
-    const spacing = 150; // Espaciado entre imágenes
+    const spacing = 200; // Espaciado entre imágenes (aumentado para que las armas no se corten)
 
     heroImages.forEach((image, index) => {
-      ctx.drawImage(image, x, y, 100, 100); // Dibujar héroe
-      ctx.drawImage(weaponImages[index], x, y + 120, 100, 100); // Dibujar arma debajo del héroe
+      // Dibujar héroe (100x100)
+      ctx.drawImage(image, x, y, 100, 100);
+
+      // Dibujar arma debajo del héroe (100x100)
+      ctx.drawImage(weaponImages[index], x, y + 120, 100, 100);
+
+      // Mover la posición en X para el siguiente héroe y arma
       x += spacing;
     });
 
@@ -58,7 +63,7 @@ module.exports = {
     // Crear el embed con la imagen y el resto de la información
     const embed = new EmbedBuilder()
       .setTitle(`Equipo recomendado para ${selectedBoss.toUpperCase()} (${selectedElement.toUpperCase()})`)
-      .setImage('attachment://team.png') // Adjuntar la imagen al embed
+      .setImage('attachment://team.png') // La imagen se mostrará arriba del embed
       .setColor('#0099ff')
       .addFields(
         { name: '📜 Reliquia', value: translations.relic[team.relic] || team.relic || 'No disponible', inline: false },
