@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags } = require('discord.js'); // Añadir MessageFlags
+const { SlashCommandBuilder, MessageFlagsBitField } = require('discord.js'); // Cambiar MessageFlags a MessageFlagsBitField
 const { getBossData } = require('../utils/raidUtils/raidApi');
 const { createEmbed, createButtons } = require('../utils/raidUtils/raidEmbed');
 
@@ -27,20 +27,21 @@ module.exports = {
       if (!bossData || !Array.isArray(bossData) || bossData.length === 0) {
         return interaction.reply({
           content: 'No se encontraron equipos recomendados para este jefe y elemento.',
-          flags: MessageFlags.Ephemeral, // Cambiar aquí
+          flags: MessageFlagsBitField.Flags.Ephemeral, // Cambiar aquí
         });
       }
 
       let currentPage = 0;
 
       // Obtener los embeds (principal + héroes)
-      const embeds = createEmbed(bossData, selectedBoss, selectedElement, currentPage);
+      const { embeds, files } = await createEmbed(bossData, selectedBoss, selectedElement, currentPage);
 
       // Responder con los embeds y los botones de paginación
       await interaction.reply({
         embeds: embeds, // Enviar todos los embeds
+        files: files, // Enviar la imagen
         components: [createButtons(currentPage, bossData.length)],
-        flags: MessageFlags.Ephemeral, // Cambiar aquí
+        flags: MessageFlagsBitField.Flags.Ephemeral, // Cambiar aquí
       });
 
       // Manejar paginación
@@ -58,9 +59,10 @@ module.exports = {
         }
 
         // Actualizar los embeds y los botones con la nueva página
-        const updatedEmbeds = createEmbed(bossData, selectedBoss, selectedElement, currentPage);
+        const { embeds: updatedEmbeds, files: updatedFiles } = await createEmbed(bossData, selectedBoss, selectedElement, currentPage);
         await i.update({
           embeds: updatedEmbeds,
+          files: updatedFiles,
           components: [createButtons(currentPage, bossData.length)],
         });
       });
@@ -72,7 +74,7 @@ module.exports = {
       console.error('Error en el comando raid:', error);
       await interaction.reply({
         content: 'Hubo un error al obtener los datos del jefe. Por favor, inténtalo de nuevo.',
-        flags: MessageFlags.Ephemeral, // Cambiar aquí
+        flags: MessageFlagsBitField.Flags.Ephemeral, // Cambiar aquí
       });
     }
   },
