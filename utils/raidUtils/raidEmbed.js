@@ -29,7 +29,7 @@ module.exports = {
     }
 
     // Crear un canvas para la imagen de héroes, armas y reliquia
-    const canvas = createCanvas(1000, 400); // Aumentamos el alto para incluir la reliquia
+    const canvas = createCanvas(1000, 500); // Aumentamos el alto para dar más espacio a la reliquia
     const ctx = canvas.getContext('2d');
 
     // Cargar las imágenes de los héroes, armas y reliquia
@@ -60,8 +60,9 @@ module.exports = {
       x += spacing;
     });
 
-    // Dibujar la reliquia debajo de las armas
-    ctx.drawImage(relicImage, 50, y + 260, 100, 100); // Reliquia en la parte inferior
+    // Dibujar la reliquia debajo de las armas, con más espacio
+    const relicY = y + 260; // Posición Y de la reliquia (debajo de las armas)
+    ctx.drawImage(relicImage, 50, relicY, 100, 100); // Reliquia en la parte inferior
 
     // Convertir el canvas a un buffer de imagen
     const buffer = canvas.toBuffer('image/png');
@@ -74,8 +75,9 @@ module.exports = {
       .addFields(
         // Agregar información de cartas (cards) arriba del daño
         { name: '🃏 Cartas', value: team.cards.map((card, index) => {
-          const translatedCard = translations.cards[card] || card;
-          return `**${team.heroes[index]}:** ${translatedCard}`;
+          const translatedHero = translations.heroes[team.heroes[index]] || team.heroes[index]; // Traducir nombre del héroe
+          const translatedCard = translations.cards[card] || card; // Traducir carta si es necesario
+          return `**${translatedHero}:** ${translatedCard}`;
         }).join('\n'), inline: false },
         { name: '💥 Daño', value: team.dmg ? `Daño base: ${team.dmg}` : 'No disponible', inline: false },
         { name: '🎥 Video Parte 1', value: team.videoP1 || 'No disponible', inline: false },
