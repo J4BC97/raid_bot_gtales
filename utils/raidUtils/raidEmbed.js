@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const { generateTeamImage } = require('./raidCanvasGenerator'); // Importar la función del canvas
 const translations = require('../../translations/raidTranslations');
 
 module.exports = {
@@ -28,44 +28,8 @@ module.exports = {
         });
     }
 
-    // Crear un canvas para la imagen de héroes, armas y reliquia
-    const canvas = createCanvas(1000, 500); // Aumentamos el alto para dar más espacio a la reliquia
-    const ctx = canvas.getContext('2d');
-
-    // Cargar las imágenes de los héroes, armas y reliquia
-    const heroImages = await Promise.all(team.heroesAtr.map(async (heroAtr) => {
-      return await loadImage(`https://www.gtales.top/assets/heroes/${heroAtr}.webp`);
-    }));
-
-    const weaponImages = await Promise.all(team.weaponsAtr.map(async (weaponAtr) => {
-      return await loadImage(`https://www.gtales.top/assets/weapons/${weaponAtr}.webp`);
-    }));
-
-    const relicImage = await loadImage(`https://www.gtales.top/assets/relics/${team.relic}.webp`);
-
-    // Dibujar las imágenes en el canvas
-    let x = 50; // Posición inicial en X
-    const y = 50; // Posición en Y
-    const spacing = 200; // Espaciado entre imágenes
-
-    // Dibujar héroes y armas
-    heroImages.forEach((image, index) => {
-      // Dibujar héroe (100x100)
-      ctx.drawImage(image, x, y, 100, 100);
-
-      // Dibujar arma debajo del héroe (100x100)
-      ctx.drawImage(weaponImages[index], x, y + 120, 100, 100);
-
-      // Mover la posición en X para el siguiente héroe y arma
-      x += spacing;
-    });
-
-    // Dibujar la reliquia debajo de las armas, con más espacio
-    const relicY = y + 260; // Posición Y de la reliquia (debajo de las armas)
-    ctx.drawImage(relicImage, 50, relicY, 100, 100); // Reliquia en la parte inferior
-
-    // Convertir el canvas a un buffer de imagen
-    const buffer = canvas.toBuffer('image/png');
+    // Generar la imagen del equipo recomendado
+    const buffer = await generateTeamImage(team);
 
     // Crear el embed con la imagen y el resto de la información
     const embed = new EmbedBuilder()
